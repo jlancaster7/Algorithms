@@ -1,0 +1,63 @@
+from heapq import heappop, heappush, heapify
+
+
+class MedianMed:
+    def __init__(self):
+        self.left_h = []
+        self.right_h = []
+        self.k = 0
+
+    def median(self, j):
+        self.k += 1
+        if not self.left_h:
+            heappush(self.left_h, -j)
+            return j
+        elif not self.right_h:
+            if j > -self.left_h[0]:
+                heappush(self.right_h, j)
+            else:
+                heappush(self.right_h, -heappop(self.left_h))
+                heappush(self.left_h, -j)
+            return -self.left_h[0]
+        else:
+            if j < -self.left_h[0]:
+                heappush(self.left_h, -j)
+            else:
+                heappush(self.right_h, j)
+
+            if len(self.left_h) > len(self.right_h) + 1:
+                heappush(self.right_h, -heappop(self.left_h))
+            elif len(self.right_h) > len(self.left_h) + 1:
+                heappush(self.left_h, -heappop(self.right_h))
+
+            heapify(self.left_h)
+            heapify(self.right_h)
+
+            if self.k % 2 == 0:
+                return -self.left_h[0]
+            else:
+                if len(self.left_h) == ((self.k + 1) / 2):
+                    return -self.left_h[0]
+                else:
+                    return self.right_h[0]
+
+    def median_maintenance(self, E):
+        a = 0
+        for i in E:
+            a += self.median(int(i))
+        return a % 10000
+
+
+def run_algo():
+    file_name = input("Please enter file name to be processed:")
+    f = open(file_name, 'r')
+    C = f.read().split('\n')
+    C.remove('')
+    f.close()
+    Y = MedianMed()
+    print(Y.median_maintenance(C))
+
+
+if __name__ == '__main__':
+    run_algo()
+
